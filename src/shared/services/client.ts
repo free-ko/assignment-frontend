@@ -1,9 +1,18 @@
 import axios from 'axios'
 
 const BASE_URL = 'https://lrvalrdo8k.execute-api.us-east-1.amazonaws.com/Prod'
+const PATH = {
+  users: {
+    nonce: 'users/nonce',
+    nfts: 'users/nfts',
+  },
+  auth: {
+    token: 'auth/token',
+  },
+}
 
-const getNonce = async ({ publicAddress }: { publicAddress: string }) => {
-  const URL = `${BASE_URL}/users/nonce?publicAddress=${publicAddress}`
+const fetchOwnedNFT = async () => {
+  const URL = `${BASE_URL}/${PATH.users.nfts}`
 
   try {
     const { status, data } = await axios.get(URL)
@@ -14,12 +23,32 @@ const getNonce = async ({ publicAddress }: { publicAddress: string }) => {
 
     return data
   } catch (e) {
-    console.error('getNonce API Error', e)
+    console.error('fetchOwnedNFT API Error', e)
   }
 }
 
-const getToken = async ({ nonce, signature }: { nonce: any; signature: any }) => {
-  const URL = `${BASE_URL}/auth/token`
+const fetchNonce = async ({ publicAddress }: { publicAddress: string }) => {
+  const URL = `${BASE_URL}/${PATH.users.nonce}`
+
+  try {
+    const { status, data } = await axios.get(URL, {
+      params: {
+        publicAddress,
+      },
+    })
+
+    if (status !== 200) {
+      console.error(`HTTP error: ${status}`)
+    }
+
+    return data
+  } catch (e) {
+    console.error('fetchNonce API Error', e)
+  }
+}
+
+const fetchToken = async ({ nonce, signature }: { nonce: any; signature: any }) => {
+  const URL = `${BASE_URL}/${PATH.auth.token}`
 
   try {
     const { status, data } = await axios.post(URL, {
@@ -33,28 +62,12 @@ const getToken = async ({ nonce, signature }: { nonce: any; signature: any }) =>
 
     return data
   } catch (e) {
-    console.error('getToken API Error', e)
-  }
-}
-
-const getOwnedNFT = async () => {
-  const URL = `${BASE_URL}/users/nfts`
-
-  try {
-    const { status, data } = await axios.get(URL)
-
-    if (status !== 200) {
-      console.error(`HTTP error: ${status}`)
-    }
-
-    return data
-  } catch (e) {
-    console.error('getNonce API Error', e)
+    console.error('fetchToken API Error', e)
   }
 }
 
 export const client = {
-  getNonce,
-  getToken,
-  getOwnedNFT,
+  fetchNonce,
+  fetchOwnedNFT,
+  fetchToken,
 }
