@@ -1,9 +1,6 @@
-const Home = () => {
-  return (
-    <div>
-      <h1 className="font-bold text-lg underline underline-offset-2">Hello, World!</h1>
-    </div>
-  )
-}
+import { LoginForm } from '@/components/Home'
 
+const Home = () => {
+  return <LoginForm />
+}
 export default Home
