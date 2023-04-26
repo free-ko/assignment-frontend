@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { PATHNAME } from '@/shared/constants'
-import { checkChainId, convertToFormalAddress, getAddress, signing } from '@/shared/plugins'
+import { checkChainID, convertToFormalAddress, getAddress, requestSign } from '@/shared/plugins'
 import { fetchAuthToken, fetchUserNonce, setLocalStorage } from '@/shared/services'
 
 export const useLoginForm = () => {
@@ -13,7 +13,7 @@ export const useLoginForm = () => {
   )
 
   const connectToWallet = useCallback(async () => {
-    await checkChainId()
+    await checkChainID()
     const address = await getAddress()
     setUserWalletAddress(address)
   }, [])
@@ -30,7 +30,7 @@ export const useLoginForm = () => {
   )
 
   const sign = useCallback(async (nonce: string) => {
-    return await signing(nonce)
+    return await requestSign(nonce)
   }, [])
 
   const getAuthToken = useCallback(async (userWalletAddress: string, signature: string) => {

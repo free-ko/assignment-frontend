@@ -8,7 +8,6 @@ const Home = () => {
   const accessToken = localStorage.getItem('token')
 
   useEffect(() => {
-    // accessToken이 존재할 경우
     if (accessToken) {
       const tokenData = JSON.parse(atob(accessToken.split('.')[1]))
       const expiryTime = new Date(tokenData.exp * 1000)
