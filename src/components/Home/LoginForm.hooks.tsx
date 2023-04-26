@@ -1,0 +1,75 @@
+import { useCallback, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+
+import { PATHNAME } from '@/shared/constants'
+import { checkChainId, convertToFormalAddress, getAddress, signing } from '@/shared/plugins'
+import { fetchAuthToken, fetchUserNonce, setLocalStorage } from '@/shared/services'
+
+export const useLoginForm = () => {
+  const navigate = useNavigate()
+  const [isClicked, setIsClicked] = useState<boolean>(false)
+  const [userWalletAddress, setUserWalletAddress] = useState<string>(
+    'Waiting Your Wallet Address...',
+  )
+
+  const connectToWallet = useCallback(async () => {
+    await checkChainId()
+    const address = await getAddress()
+    setUserWalletAddress(address)
+  }, [])
+
+  const getUserNonce = useCallback(
+    async (userWalletAddress: string) => {
+      const { nonce } = await fetchUserNonce({
+        publicAddress: userWalletAddress,
+      })
+
+      return nonce
+    },
+    [userWalletAddress],
+  )
+
+  const sign = useCallback(async (nonce: string) => {
+    return await signing(nonce)
+  }, [])
+
+  const getAuthToken = useCallback(async (userWalletAddress: string, signature: string) => {
+    const { data } = await fetchAuthToken({
+      signature,
+      publicAddress: userWalletAddress,
+    })
+
+    return data.access_token
+  }, [])
+
+  const login = useCallback(async () => {
+    if (isClicked) {
+      return
+    }
+
+    try {
+      setIsClicked(true)
+
+      const nonce = await getUserNonce(userWalletAddress)
+      const signature = await sign(nonce)
+      const authToken = await getAuthToken(userWalletAddress, signature)
+
+      setLocalStorage('token', authToken)
+      setLocalStorage('loginAddress', convertToFormalAddress(userWalletAddress))
+
+      setIsClicked(false)
+
+      navigate(PATHNAME.NFT)
+    } catch (e) {
+      setIsClicked(false)
+      throw e
+    }
+  }, [userWalletAddress, isClicked])
+
+  return {
+    login,
+    isClicked,
+    userWalletAddress,
+    connectToWallet,
+  }
+}

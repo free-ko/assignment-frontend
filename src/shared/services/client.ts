@@ -1,5 +1,7 @@
 import axios from 'axios'
 
+import { getLocalStorage } from '@/shared/services/localStorage'
+
 const BASE_URL = 'https://lrvalrdo8k.execute-api.us-east-1.amazonaws.com/Prod'
 const PATH = {
   users: {
@@ -11,11 +13,17 @@ const PATH = {
   },
 }
 
-const fetchOwnedNFT = async () => {
+export const fetchUserOwnedNFT = async () => {
   const URL = `${BASE_URL}/${PATH.users.nfts}`
 
   try {
-    const { status, data } = await axios.get(URL)
+    const accessToken = getLocalStorage('token')
+
+    const { status, data } = await axios.get(URL, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
 
     if (status !== 200) {
       console.error(`HTTP error: ${status}`)
@@ -27,7 +35,7 @@ const fetchOwnedNFT = async () => {
   }
 }
 
-const fetchNonce = async ({ publicAddress }: { publicAddress: string }) => {
+export const fetchUserNonce = async ({ publicAddress }: { publicAddress: string }) => {
   const URL = `${BASE_URL}/${PATH.users.nonce}`
 
   try {
@@ -47,12 +55,19 @@ const fetchNonce = async ({ publicAddress }: { publicAddress: string }) => {
   }
 }
 
-const fetchToken = async ({ nonce, signature }: { nonce: any; signature: any }) => {
+// nonce와 signature를 받지 않고, publicAddress, signature 받음
+export const fetchAuthToken = async ({
+  publicAddress,
+  signature,
+}: {
+  publicAddress: string
+  signature: string
+}) => {
   const URL = `${BASE_URL}/${PATH.auth.token}`
 
   try {
     const { status, data } = await axios.post(URL, {
-      nonce,
+      publicAddress,
       signature,
     })
 
@@ -62,12 +77,6 @@ const fetchToken = async ({ nonce, signature }: { nonce: any; signature: any }) 
 
     return data
   } catch (e) {
-    console.error('fetchToken API Error', e)
+    console.error('fetchAuthToken API Error', e)
   }
-}
-
-export const client = {
-  fetchNonce,
-  fetchOwnedNFT,
-  fetchToken,
 }
