@@ -29,10 +29,6 @@ export const useLoginForm = () => {
     [userWalletAddress],
   )
 
-  const sign = useCallback(async (nonce: string) => {
-    return await requestSign(nonce)
-  }, [])
-
   const getAuthToken = useCallback(async (userWalletAddress: string, signature: string) => {
     const { data } = await fetchAuthToken({
       signature,
@@ -51,7 +47,7 @@ export const useLoginForm = () => {
       setIsClicked(true)
 
       const nonce = await getUserNonce(userWalletAddress)
-      const signature = await sign(nonce)
+      const signature = await requestSign(nonce)
       const authToken = await getAuthToken(userWalletAddress, signature)
 
       setLocalStorage('token', authToken)
