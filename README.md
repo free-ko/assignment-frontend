@@ -1,4 +1,4 @@
-## 모던라이언 Frontend 코딩 과제
+## KONKRIT Frontend 코딩 과제
 
 ## 파일 실행 전 준비
 
