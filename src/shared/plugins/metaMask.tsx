@@ -1,8 +1,6 @@
 import { ethers } from 'ethers'
 
-import { GOERLI_CHAIN_ID } from '@/shared/constants'
-
-const ethereum = window.ethereum
+import { GOERLI_CHAIN_ID, METHOD } from '@/shared/constants'
 
 export const isAddress = (address: string) => ethers.utils.isAddress(address)
 
@@ -10,39 +8,50 @@ export const convertToFormalAddress = (address: string) => ethers.utils.getAddre
 
 export const createBytesMsg = (msg: string) => ethers.utils.toUtf8Bytes(msg)
 
-export const checkChainId = async () => {
-  if (ethereum) {
-    const _ethereum = window.ethereum as any
-    await _ethereum.request({
-      method: 'wallet_switchEthereumChain',
-      params: [{ chainId: GOERLI_CHAIN_ID }],
-    })
+export const checkChainID = async () => {
+  if (window.ethereum) {
+    try {
+      const _ethereum = window.ethereum as any
+
+      await _ethereum.request({
+        method: METHOD.switchEthereumChainToWallet,
+        params: [{ chainId: GOERLI_CHAIN_ID }],
+      })
+    } catch (e) {
+      console.error('checkChainID', e)
+    }
   }
 }
 
 export const getAddress = async () => {
-  if (ethereum) {
-    const _ethereum = ethereum as any
-    const [account] = await _ethereum.request({ method: 'eth_requestAccounts' })
-    console.log('Connected account:', account)
+  if (window.ethereum) {
+    try {
+      const _ethereum = window.ethereum as any
+      const [account] = await _ethereum.request({ method: METHOD.requestAccount })
+      console.log('Connected account:', account)
 
-    return account
-  } else {
-    throw new Error('E404')
+      return account
+    } catch (e) {
+      console.error('getAddress', e)
+    }
   }
 }
 
-export const signing = async (msg: string) => {
+export const requestSign = async (msg: string) => {
   console.log('signing msg = ', msg)
 
-  if (ethereum) {
-    const _ethereum = ethereum as any
-    const bytesMsg = createBytesMsg(msg)
+  if (window.ethereum) {
+    try {
+      const _ethereum = window.ethereum as any
+      const bytesMsg = createBytesMsg(msg)
 
-    return await _ethereum.request({
-      method: 'personal_sign',
-      params: [_ethereum.selectedAddress, ethers.utils.hexlify(bytesMsg)],
-    })
+      return await _ethereum.request({
+        method: METHOD.requestSign,
+        params: [_ethereum.selectedAddress, ethers.utils.hexlify(bytesMsg)],
+      })
+    } catch (e) {
+      console.error('requestSign', e)
+    }
   }
 }
 
@@ -75,11 +84,15 @@ export const sendEncodedNFT = async (
     type: 'function',
   }
 
-  if (ethereum) {
-    const provider = new ethers.providers.Web3Provider(ethereum)
-    const signer = provider.getSigner()
-    const contract = new ethers.Contract(contractAddress, [sendFrom], signer)
+  if (window.ethereum) {
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const signer = provider.getSigner()
+      const contract = new ethers.Contract(contractAddress, [sendFrom], signer)
 
-    return await contract.transferFrom(await signer.getAddress(), recipientAddress, tokenId)
+      return await contract.transferFrom(await signer.getAddress(), recipientAddress, tokenId)
+    } catch (e) {
+      console.error('sendEncodedNFT', e)
+    }
   }
 }
