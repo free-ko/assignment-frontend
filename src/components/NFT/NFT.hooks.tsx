@@ -45,7 +45,7 @@ export const useNFT = () => {
   }))
 
   return {
-    NFTItemList: mockDataList,
+    NFTItemList,
     isLoading,
   }
 }
