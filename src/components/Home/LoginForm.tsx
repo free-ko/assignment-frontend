@@ -4,7 +4,7 @@ import { useLoginForm } from './LoginForm.hooks'
 import { Styled } from './LoginForm.styled'
 
 const LoginForm = () => {
-  const { isClicked, login, userWalletAddress, connectToWallet } = useLoginForm()
+  const { handleLogin, isClicked, userWalletAddress, connectToWallet } = useLoginForm()
 
   return (
     <div className={Styled.wrapper}>
@@ -21,7 +21,7 @@ const LoginForm = () => {
         <div className={Styled.gap2} />
         <Button
           size="lg"
-          onClick={() => login()}
+          onClick={handleLogin}
           className={Styled.button}
           text={isClicked ? 'Loading' : 'Login'}
         />
