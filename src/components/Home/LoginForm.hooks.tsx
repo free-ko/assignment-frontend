@@ -42,7 +42,7 @@ export const useLoginForm = () => {
     return data.access_token
   }, [])
 
-  const login = useCallback(async () => {
+  const handleLogin = useCallback(async () => {
     if (isClicked) {
       return
     }
@@ -67,7 +67,7 @@ export const useLoginForm = () => {
   }, [userWalletAddress, isClicked])
 
   return {
-    login,
+    handleLogin,
     isClicked,
     userWalletAddress,
     connectToWallet,

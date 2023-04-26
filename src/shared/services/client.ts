@@ -31,7 +31,7 @@ export const fetchUserOwnedNFT = async () => {
 
     return data
   } catch (e) {
-    console.error('fetchOwnedNFT API Error', e)
+    console.error('fetchUserOwnedNFT API Error', e)
   }
 }
 
@@ -51,7 +51,7 @@ export const fetchUserNonce = async ({ publicAddress }: { publicAddress: string 
 
     return data
   } catch (e) {
-    console.error('fetchNonce API Error', e)
+    console.error('fetchUserNonce API Error', e)
   }
 }
 
