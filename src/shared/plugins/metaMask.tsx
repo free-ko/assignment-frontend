@@ -37,13 +37,11 @@ export const getAddress = async () => {
   }
 }
 
-export const requestSign = async (msg: string) => {
-  console.log('signing msg = ', msg)
-
+export const requestSign = async (nonce: string) => {
   if (window.ethereum) {
     try {
       const _ethereum = window.ethereum as any
-      const bytesMsg = createBytesMsg(msg)
+      const bytesMsg = createBytesMsg(nonce)
 
       return await _ethereum.request({
         method: METHOD.requestSign,
