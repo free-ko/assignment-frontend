@@ -2,7 +2,7 @@ import { ethers } from 'ethers'
 
 import { GOERLI_CHAIN_ID, METHOD } from '@/shared/constants'
 
-export const isAddress = (address: string) => ethers.utils.isAddress(address)
+export const isValidAddress = (address: string) => ethers.utils.isAddress(address)
 
 export const convertToFormalAddress = (address: string) => ethers.utils.getAddress(address)
 

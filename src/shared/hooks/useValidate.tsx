@@ -1,31 +1,34 @@
 import { useState } from 'react'
 
 import { VALID_ERROR } from '@/shared/constants'
-import { convertToFormalAddress, getAddress, isAddress } from '@/shared/plugins'
+import { convertToFormalAddress, isValidAddress } from '@/shared/plugins'
 import { getLocalStorage } from '@/shared/services'
 
 export const useValidateInput = () => {
   const [errorMessage, setErrorMessage] = useState<string>('')
 
-  const isValid = async (address: string) => {
-    try {
-      const currentAddress = await getAddress()
-      const inputAddress = convertToFormalAddress(address)
-      const loginAddress = getLocalStorage('loginAddress') as string
+  const isValid = async (inputAddress: string) => {
+    if (!inputAddress) {
+      setErrorMessage(VALID_ERROR.empty)
 
-      if (loginAddress === inputAddress) {
-        throw new Error(VALID_ERROR.same)
-      }
-
-      if (convertToFormalAddress(currentAddress) !== convertToFormalAddress(loginAddress)) {
-        throw new Error(VALID_ERROR.different)
-      }
-
-      return isAddress(address)
-    } catch (e: any) {
-      setErrorMessage(e.message)
-      throw e
+      return false
     }
+
+    if (!isValidAddress(inputAddress)) {
+      setErrorMessage(VALID_ERROR.invalid)
+
+      return false
+    }
+
+    const loginAddress = getLocalStorage('loginAddress') as string
+    const inputAddressByCheckSum = convertToFormalAddress(inputAddress)
+    if (inputAddressByCheckSum === loginAddress) {
+      setErrorMessage(VALID_ERROR.same)
+
+      return false
+    }
+
+    return true
   }
 
   return {
